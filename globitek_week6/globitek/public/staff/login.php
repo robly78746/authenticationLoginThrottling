@@ -4,7 +4,6 @@ require_once('../../private/initialize.php');
 // Until we learn about encryption, we will use an unencrypted
 // master password as a stand-in. It should go without saying
 // that this should *never* be done in real production code.
-$master_password = 'secret';
 
 // Set default values for all variables the page needs.
 $errors = array();
@@ -33,14 +32,14 @@ if(is_post_request() && request_is_same_domain()) {
     // No loop, only one result
     $user = db_fetch_assoc($users_result);
     if($user) {
-      if($password === $master_password) {
+      if(password_verify($password, $user['hashed_password'])) {
         // Username found, password matches
         log_in_user($user);
         // Redirect to the staff menu after login
         redirect_to('index.php');
       } else {
         // Username found, but password does not match.
-        $errors[] = "Log in was unsuccessful.";
+        $errors[] = "Log in was not successful.";
       }
     } else {
       // No username found
