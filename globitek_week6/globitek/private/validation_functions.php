@@ -30,6 +30,15 @@
   function has_valid_username_format($value) {
     return preg_match('/\A[A-Za-z0-9_]+\Z/', $value);
   }
+  
+  // has_valid_password_format('johnny_5')
+  function has_valid_password_format($value, $confirmValue) {
+	if(preg_match('/[A-Z]/', $value) === 0 || preg_match('/[a-z]/', $value) === 0 || preg_match('/[^A-Za-z0-9\s]/', $value) === 0 || preg_match('/[0-9]/') === 0)
+	{
+		return false;
+	}
+	return true;
+  }
 
   // has_valid_phone_format('(212) 555-6666')
   function has_valid_phone_format($value) {
