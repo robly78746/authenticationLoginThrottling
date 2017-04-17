@@ -32,7 +32,7 @@
   }
   
   // has_valid_password_format('johnny_5')
-  function has_valid_password_format($value, $confirmValue) {
+  function has_valid_password_format($value) {
 	if(preg_match('/[A-Z]/', $value) === 0 || preg_match('/[a-z]/', $value) === 0 || preg_match('/[^A-Za-z0-9\s]/', $value) === 0 || preg_match('/[0-9]/') === 0)
 	{
 		return false;

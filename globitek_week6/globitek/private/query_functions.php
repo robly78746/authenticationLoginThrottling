@@ -516,6 +516,15 @@
     } elseif (!is_unique_username($user['username'], $user['id'])) {
       $errors[] = "Username not allowed. Try another.";
     }
+	
+	if(is_blank($user['password'])) {
+		$errors[] = "Password cannot be blank.";
+	} elseif(!has_length($user['password'], array('min' => 12))) {
+		$errors[] = "Password must be at least 12 characters.";
+	} else if(!has_valid_password_format($user['password'])) {
+		$errors[] = "Password must have at least one of of each: uppercase letter, lowercase letter, letter, symbol.";
+	}
+	
     return $errors;
   }
 
@@ -529,15 +538,18 @@
       return $errors;
     }
 
+	$hashed_password = password_hash($user['password'], PASSWORD_DEFAULT);
+	
     $created_at = date("Y-m-d H:i:s");
     $sql = "INSERT INTO users ";
-    $sql .= "(first_name, last_name, email, username, created_at) ";
+    $sql .= "(first_name, last_name, email, username, created_at, hashed_password) ";
     $sql .= "VALUES (";
     $sql .= "'" . db_escape($db, $user['first_name']) . "',";
     $sql .= "'" . db_escape($db, $user['last_name']) . "',";
     $sql .= "'" . db_escape($db, $user['email']) . "',";
     $sql .= "'" . db_escape($db, $user['username']) . "',";
-    $sql .= "'" . $created_at . "'";
+    $sql .= "'" . $created_at . "',";
+	$sql .= "'" . db_escape($db, $hashed_password) . "'";
     $sql .= ");";
     // For INSERT statements, $result is just true/false
     $result = db_query($db, $sql);
@@ -561,12 +573,15 @@
     if (!empty($errors)) {
       return $errors;
     }
+	
+	$hashed_password = password_hash($user['password'], PASSWORD_DEFAULT);
 
     $sql = "UPDATE users SET ";
     $sql .= "first_name='" . db_escape($db, $user['first_name']) . "', ";
     $sql .= "last_name='" . db_escape($db, $user['last_name']) . "', ";
     $sql .= "email='" . db_escape($db, $user['email']) . "', ";
-    $sql .= "username='" . db_escape($db, $user['username']) . "' ";
+    $sql .= "username='" . db_escape($db, $user['username']) . "', ";
+	$sql .= "hashed_password='" . db_escape($db, $hashed_password) . "' ";
     $sql .= "WHERE id='" . db_escape($db, $user['id']) . "' ";
     $sql .= "LIMIT 1;";
     // For update_user statements, $result is just true/false
