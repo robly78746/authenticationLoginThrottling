@@ -473,10 +473,20 @@
   function find_user_by_id($id=0) {
     global $db;
     $sql = "SELECT * FROM users ";
-    $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
+    $sql .= "WHERE id='" . db_escape($db, $id) . "' ";// db_escape($db,
     $sql .= "LIMIT 1;";
     $users_result = db_query($db, $sql);
     return $users_result;
+  }
+  
+  //Find username using id
+  function find_username_by_id($id=0) {
+	global $db;
+    $sql = "SELECT username FROM users ";
+    $sql .= "WHERE id='" . $id . "' ";
+    $sql .= "LIMIT 1;";
+    $username_result = db_query($db, $sql);
+    return $username_result;
   }
 
   // find_users_by_username('rockclimber67');
@@ -618,5 +628,67 @@
     }
   }
 
+  function find_failed_login($username) {
+	global $db;
+    $sql = "SELECT * FROM failed_logins ";
+    $sql .= "WHERE username = '" . db_escape($db, $username) . "';";
+    $users_result = db_query($db, $sql);
+    return $users_result;
+  }
 
+  function insert_failed_login($failed_login) {
+	global $db;
+	
+    $created_at = date("Y-m-d H:i:s");
+    $sql = "INSERT INTO failed_logins ";
+    $sql .= "(username, count, last_attempt) ";
+    $sql .= "VALUES (";
+    $sql .= "'" . db_escape($db, $failed_login['username']) . "',";
+    $sql .= "'" . db_escape($db, $failed_login['count']) . "',";
+    $sql .= "'" . db_escape($db, $failed_login['last_attempt']) . "'";
+    $sql .= ");";
+    // For INSERT statements, $result is just true/false
+    $result = db_query($db, $sql);
+    if($result) {
+      return true;
+    } else {
+      // The SQL INSERT statement failed.
+      // Just show the error, not the form
+      echo db_error($db);
+      db_close($db);
+      exit;
+    }
+  }
+  
+  function update_failed_login($failed_login) {
+    global $db;
+
+    $sql = "UPDATE failed_logins SET ";
+    $sql .= "username='" . db_escape($db, $failed_login['username']) . "', ";
+    $sql .= "count='" . db_escape($db, $failed_login['count']) . "', ";
+    $sql .= "last_attempt='" . db_escape($db, $failed_login['last_attempt']) . "' ";
+    $sql .= "LIMIT 1;";
+    // For update_user statements, $result is just true/false
+    $result = db_query($db, $sql);
+    if($result) {
+      return true;
+    } else {
+      // The SQL UPDATE statement failed.
+      // Just show the error, not the form
+      echo db_error($db);
+      db_close($db);
+      exit;
+    }
+  }
+  
+  function reset_failed_login($username) {
+	$sql_date = date("Y-m-d H:i:s");
+	$failed_login = [
+        'username' => $username,
+        'count' => 0,
+        'last_attempt' => $sql_date
+      ];
+	update_failed_login($failed_login);
+  }
+  
 ?>

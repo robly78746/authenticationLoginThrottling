@@ -29,7 +29,7 @@ require_login();
       echo "<td>" . h($user['last_name']) . "</td>";
       echo "<td>" . h($user['username']) . "</td>";
       echo "<td>";
-      echo "<a href=\"show.php?id=" . h(u($user['id'])) . "\">Show</a>";
+      echo "<a href=\"show.php?id=" . h(u($user['id'])) . "&userId=" . h(u($user['id'])) . "\">Show</a>";
       echo "</td>";
       echo "<td>";
       echo "<a href=\"edit.php?id=" . h(u($user['id'])) . "\">Edit</a>";

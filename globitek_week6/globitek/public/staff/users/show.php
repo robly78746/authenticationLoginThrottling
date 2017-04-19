@@ -6,12 +6,23 @@ if(!isset($_GET['id'])) {
   redirect_to('index.php');
 }
 $id = $_GET['id'];
+$user_id = $_GET['userId'];
 $users_result = find_user_by_id($id);
+$username_result = find_username_by_id($user_id);
 // No loop, only one result
 $user = db_fetch_assoc($users_result);
+$usernames = mysqli_fetch_all($username_result);
+
+$username = "";
+foreach ($usernames as $usern) {
+	foreach($usern as $u) {
+		$username .= $u;
+	}
+}
+
 ?>
 
-<?php $page_title = 'Staff: User ' . $user['first_name'] . " " . $user['last_name']; ?>
+<?php $page_title = 'Staff: User ' . h($user['first_name']) . " " . h($user['last_name']); ?>
 <?php include(SHARED_PATH . '/staff_header.php'); ?>
 
 <div id="main-content">
@@ -27,7 +38,7 @@ $user = db_fetch_assoc($users_result);
     echo "</tr>";
     echo "<tr>";
     echo "<td>Username: </td>";
-    echo "<td>" . h($user['username']) . "</td>";
+    echo "<td>" . h($username) . "</td>";
     echo "</tr>";
     echo "<tr>";
     echo "<td>Email: </td>";
